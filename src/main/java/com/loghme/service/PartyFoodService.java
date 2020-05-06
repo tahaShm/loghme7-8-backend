@@ -21,12 +21,12 @@ public class PartyFoodService {
             @RequestParam(value = "foodName") String foodName,
             @RequestParam(value = "count") int count) {
         try {
-            loghme.changeCart("1234", id, foodName, count, true);
+            loghme.changeCart("hoomch@gmail.com", id, foodName, count, true);
         }
         catch (Exception e) {
             throw new BadRequestException();
         }
-        return loghme.getCurrentOrderFoods("1234");
+        return loghme.getCurrentOrderFoods("hoomch@gmail.com");
     }
 
     @RequestMapping(value = "/partyFood/{id}", method = RequestMethod.DELETE,
@@ -36,12 +36,12 @@ public class PartyFoodService {
             @RequestParam(value = "foodName") String foodName,
             @RequestParam(value = "count") int count) {
         try {
-            loghme.changeCart("1234", id, foodName, -count, true);
+            loghme.changeCart("hoomch@gmail.com", id, foodName, -count, true);
         }
         catch (Exception e) {
             throw new BadRequestException();
         }
-        return loghme.getCurrentOrderFoods("1234");
+        return loghme.getCurrentOrderFoods("hoomch@gmail.com");
     }
 
     @RequestMapping(value = "/partyFood", method = RequestMethod.GET,

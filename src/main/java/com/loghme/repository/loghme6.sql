@@ -1,11 +1,10 @@
 create table Users (
-    name char(100),
+    firstName char(100),
+    lastName char(100),
     email char(100),
     credit integer,
-    phoneNumber char(11),
-    username char(50),
-    password char(20),
-    primary key (username)
+    password char(100),
+    primary key (email)
 );
 
 create table Restaurants (
@@ -61,7 +60,7 @@ create table Orders (
     status ENUM ('searching', 'delivering', 'done', 'notFinalized'),
     registerTime DATETIME,
     primary key (id),
-    foreign key (username) references Users(username) on delete cascade,
+    foreign key (username) references Users(email) on delete cascade,
     foreign key (restaurantId) references Restaurants(id) on delete cascade
 );
 

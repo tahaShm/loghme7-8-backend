@@ -16,11 +16,11 @@ public class CreditService {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public int addCredit(HttpEntity<String> httpEntity) {
         try {
-            loghme.addCredit("1234", httpEntity.getBody());
+            loghme.addCredit("hoomch@gmail.com", httpEntity.getBody());
         }
         catch (Exception e) {
             throw new BadRequestException();
         }
-        return loghme.getUserCredit("1234");
+        return loghme.getUserCredit("hoomch@gmail.com");
     }
 }

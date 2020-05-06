@@ -15,14 +15,14 @@ public class OrderService {
     @RequestMapping(value = "/order", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ArrayList<OrderDTO> getOrders() {
-        return loghme.getUserOrders("1234");
+        return loghme.getUserOrders("hoomch@gmail.com");
     }
 
     @RequestMapping(value = "/order", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void finalizeOrder() {
         try {
-            loghme.finalizeOrder("1234");
+            loghme.finalizeOrder("hoomch@gmail.com");
         }
         catch (Exception e) {
             throw new BadRequestException();

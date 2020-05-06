@@ -15,6 +15,6 @@ public class CurrentOrderService {
     @RequestMapping(value = "/currentOrder", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ArrayList<FoodDTO> getCurrentOrder() {
-        return loghme.getCurrentOrderFoods("1234");
+        return loghme.getCurrentOrderFoods("hoomch@gmail.com");
     }
 }

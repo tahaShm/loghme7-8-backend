@@ -6,9 +6,18 @@ import com.loghme.repository.LoghmeRepository;
 import com.loghme.service.DTO.FoodDTO;
 import com.loghme.service.DTO.OrderDTO;
 import com.loghme.service.DTO.UserDTO;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
+import java.security.Key;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -82,5 +91,57 @@ public class Loghme
 
             }
         }
+    }
+
+    public String hashPassword(String passwordToHash) {
+        String generatedPassword = null;
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(passwordToHash.getBytes());
+            byte[] bytes = md.digest();
+            StringBuilder sb = new StringBuilder();
+            for (byte aByte : bytes) sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+            generatedPassword = sb.toString();
+        }
+        catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return generatedPassword;
+    }
+
+    public static String createJWT(String id, String issuer, long ttlMillis) {
+        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+
+        long nowMillis = System.currentTimeMillis();
+        Date now = new Date(nowMillis);
+
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary("loghme");
+        Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
+
+        JwtBuilder builder = Jwts.builder().setId(id)
+                .setIssuedAt(now)
+                .setIssuer(issuer)
+                .signWith(signatureAlgorithm, signingKey);
+
+        if (ttlMillis > 0) {
+            long expMillis = nowMillis + ttlMillis;
+            Date exp = new Date(expMillis);
+            builder.setExpiration(exp);
+        }
+
+        return builder.compact();
+    }
+
+    public static Claims decodeJWT(String jwt) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(DatatypeConverter.parseBase64Binary("loghme"))
+                .parseClaimsJws(jwt).getBody();
+        return claims;
+    }
+
+    public String addUser(String json) throws JSONException, DuplicateEmail {
+        JSONObject obj = new JSONObject(json);
+        loghmeRepository.addUser(obj.getString("firstName"), obj.getString("lastName"), obj.getString("email"), hashPassword(obj.getString("password")));
+        return createJWT(obj.getString("email"), obj.getString("issuer"), 86400000);
     }
 }

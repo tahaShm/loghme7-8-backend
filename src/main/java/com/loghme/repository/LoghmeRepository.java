@@ -3,10 +3,7 @@ package com.loghme.repository;
 import com.loghme.domain.utils.Food;
 import com.loghme.domain.utils.Location;
 import com.loghme.domain.utils.PartyFood;
-import com.loghme.domain.utils.exceptions.ExtraFoodPartyExp;
-import com.loghme.domain.utils.exceptions.NotEnoughCreditExp;
-import com.loghme.domain.utils.exceptions.NotEnoughFoodToDelete;
-import com.loghme.domain.utils.exceptions.RestaurantNotFoundExp;
+import com.loghme.domain.utils.exceptions.*;
 import com.loghme.repository.DAO.FoodDAO;
 import com.loghme.repository.DAO.PartyFoodDAO;
 import com.loghme.repository.DAO.RestaurantDAO;
@@ -36,7 +33,7 @@ public class LoghmeRepository {
         dataSource = new ComboPooledDataSource();
         dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/loghme6?useSSL=false");
         dataSource.setUser("root");
-        dataSource.setPassword("Taha1378");
+        dataSource.setPassword("Sph153153");
 
         dataSource.setInitialPoolSize(5);
         dataSource.setMinPoolSize(5);
@@ -51,12 +48,12 @@ public class LoghmeRepository {
         return instance;
     }
 
-    public void loginUser(String username, String password) {
+    public void loginUser(String email, String password) {
         Connection connection;
         try {
             connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("select * from Users where username = \"" + username + "\" and password = \"" + password +"\"");
+            ResultSet result = statement.executeQuery("select * from Users where email = \"" + email + "\" and password = \"" + password +"\"");
             if (result.next()) {
                 String phoneNumber = result.getString("phoneNumber");
                 //same way for other attributes
@@ -409,13 +406,13 @@ public class LoghmeRepository {
         return partyFoods;
     }
 
-    public int getCredit(String username) {
+    public int getCredit(String email) {
         Connection connection;
         int credit = 0;
         try {
             connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("SELECT credit FROM Users WHERE username=\"" + username + "\"");
+            ResultSet result = statement.executeQuery("SELECT credit FROM Users WHERE email=\"" + email + "\"");
             if (result.next())
                 credit = result.getInt("credit");
             else
@@ -429,15 +426,15 @@ public class LoghmeRepository {
         return credit;
     }
 
-    public void changeCredit(String username, int addingCredit) throws NotEnoughCreditExp {
+    public void changeCredit(String email, int addingCredit) throws NotEnoughCreditExp {
         Connection connection;
         try {
             connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-            int newCredit = getCredit(username) + addingCredit;
+            int newCredit = getCredit(email) + addingCredit;
             if (newCredit < 0)
                 throw new NotEnoughCreditExp();
-            statement.executeUpdate("UPDATE Users SET credit=" + newCredit + " WHERE username=\"" + username + "\"");
+            statement.executeUpdate("UPDATE Users SET credit=" + newCredit + " WHERE email=\"" + email + "\"");
             statement.close();
             connection.close();
         }
@@ -548,41 +545,41 @@ public class LoghmeRepository {
         return orderId;
     }
 
-    public void addUser(String id, String name, String phoneNumber, String email, int credit, String password) {
+    public void addUser(String firstName, String lastName, String email, String password) throws DuplicateEmail {
         Connection connection;
         try {
             connection = dataSource.getConnection();
             PreparedStatement pStatement = connection.prepareStatement(
-                    "insert into Users (name, email, credit, phoneNumber, username, password) values (?, ?, ?, ?, ?, ?)");
-            pStatement.setString(1, name);
-            pStatement.setString(2, email);
-            pStatement.setInt(3, credit);
-            pStatement.setString(4, phoneNumber);
-            pStatement.setString(5, id);
-            pStatement.setString(6, password);
+                    "insert into Users (firstName, lastName, credit, email, password) values (?, ?, ?, ?, ?)");
+            pStatement.setString(1, firstName);
+            pStatement.setString(2, lastName);
+            pStatement.setInt(3, 0);
+            pStatement.setString(4, email);
+            pStatement.setString(5, password);
             pStatement.executeUpdate();
             pStatement.close();
             connection.close();
         }
         catch (SQLException e) {
-            if(e.getErrorCode() != MYSQL_DUPLICATE_PK )
+            if (e.getErrorCode() == MYSQL_DUPLICATE_PK)
+                throw new DuplicateEmail();
+            else
                 e.printStackTrace();
         }
     }
 
-    public UserDTO getUserDTO(String username) {
+    public UserDTO getUserDTO(String email) {
         Connection connection;
         try {
             connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(
-                    "SELECT * FROM Users WHERE username=\"" + username + "\"");
+                    "SELECT * FROM Users WHERE email=\"" + email + "\"");
             if (result.next()) {
-                String name = result.getString("name");
-                String phoneNumber = result.getString("phoneNumber");
-                String email = result.getString("email");
+                String firstName = result.getString("firstName");
+                String lastName = result.getString("lastName");
                 int credit = result.getInt("credit");
-                return new UserDTO(username, name, phoneNumber, email, credit);
+                return new UserDTO(firstName, lastName, email, credit);
             }
         }
         catch (SQLException e) {
