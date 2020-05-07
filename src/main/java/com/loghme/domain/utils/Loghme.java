@@ -144,4 +144,14 @@ public class Loghme
         loghmeRepository.addUser(obj.getString("firstName"), obj.getString("lastName"), obj.getString("email"), hashPassword(obj.getString("password")));
         return createJWT(obj.getString("email"), obj.getString("issuer"), 86400000);
     }
+
+    public String loginUser(String json) throws JSONException, UserNotFoundExp, WrongPasswordExp {
+        JSONObject obj = new JSONObject(json);
+        if (obj.getBoolean("authWithGoogle"))
+            return createJWT(obj.getString("email"), obj.getString("issuer"), 86400000);
+        else if (loghmeRepository.authenticate(obj.getString("email"), hashPassword(obj.getString("password"))) == 1)
+            return createJWT(obj.getString("email"), obj.getString("issuer"), 86400000);
+        else
+            throw new WrongPasswordExp();
+    }
 }

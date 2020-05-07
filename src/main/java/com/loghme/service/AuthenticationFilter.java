@@ -22,7 +22,8 @@ import java.io.IOException;
         "/currentOrder/",
         "/currentOrder",
         "/credit/",
-        "/credit"
+        "/credit",
+        "/profile"
 })
 public class AuthenticationFilter implements Filter {
 
@@ -34,7 +35,7 @@ public class AuthenticationFilter implements Filter {
 
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-
+        chain.doFilter(request, response);
         System.out.println("filter called!");
         //Jwt checking must be implemented here...
     }

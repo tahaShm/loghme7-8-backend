@@ -15,23 +15,4 @@ public class ProfileService {
     public UserDTO getUser() {
         return Loghme.getInstance().getUserDTO("hoomch@gmail.com");
     }
-
-    @RequestMapping(value = "/profile", method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public String authenticate(HttpEntity<String> httpEntity) {
-        return httpEntity.getBody();
-    }
-
-    @RequestMapping(value = "/profile", method = RequestMethod.PUT,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public String signUp(HttpEntity<String> httpEntity) {
-        String token = null;
-        try {
-            token = Loghme.getInstance().addUser(httpEntity.getBody());
-        }
-        catch (Exception e) {
-            throw new BadRequestException();
-        }
-        return token;
-    }
 }
