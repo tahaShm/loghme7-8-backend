@@ -1,16 +1,29 @@
 package com.loghme.service;
 
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-
 import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Component
+@WebFilter(urlPatterns = {"/search/",
+        "/search",
+        "/restaurant/",
+        "/restaurant",
+        "/restaurant/*",
+        "/partyFood/",
+        "/partyFood",
+        "/partyFood/*",
+        "/order/",
+        "/order",
+        "/food/",
+        "/food",
+        "/food/*",
+        "/currentOrder/",
+        "/currentOrder",
+        "/credit/",
+        "/credit"
+})
 public class AuthenticationFilter implements Filter {
 
     @Override
@@ -21,24 +34,8 @@ public class AuthenticationFilter implements Filter {
 
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-        System.out.println(
-                "Logging Request  {} : {}" + req.getMethod() +
-                        req.getRequestURI());
-        chain.doFilter(request, response);
-        System.out.println((
-                "Logging Response :{}"+
-                        res.getContentType()));
-    }
 
-    @Bean
-    public FilterRegistrationBean<AuthenticationFilter> loggingFilter(){
-        FilterRegistrationBean<AuthenticationFilter> registrationBean
-                = new FilterRegistrationBean<>();
-
-        registrationBean.setFilter(new AuthenticationFilter());
-        registrationBean.addUrlPatterns("*");
-        System.out.println("heeeeeeee");
-
-        return registrationBean;
+        System.out.println("filter called!");
+        //Jwt checking must be implemented here...
     }
 }
