@@ -30,9 +30,11 @@ public class AuthenticationService {
             token = Loghme.getInstance().loginUser(httpEntity.getBody());
         }
         catch (Exception e) {
-            e.printStackTrace();
             throw new BadRequestException();
         }
         return token;
     }
+
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public void isLoggedIn() {}
 }
