@@ -25,11 +25,13 @@ public class AuthenticationService {
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public String login(HttpEntity<String> httpEntity) {
+        System.out.println("here");
         String token = null;
         try {
             token = Loghme.getInstance().loginUser(httpEntity.getBody());
         }
         catch (Exception e) {
+            e.printStackTrace();
             throw new BadRequestException();
         }
         return token;
