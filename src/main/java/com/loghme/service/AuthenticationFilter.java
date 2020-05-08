@@ -44,7 +44,6 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
 
         try {
-            System.out.println(req.getHeader("Authorization"));
             String authTokenHeader = req.getHeader("Authorization");
             if (authTokenHeader.length() > 7) { //Bearer
                 String[] parts = authTokenHeader.split(" ");
@@ -54,7 +53,7 @@ public class AuthenticationFilter implements Filter {
                 String userEmail = claims.getId();
                 LoghmeRepository loghmeRepo = LoghmeRepository.getInstance();
                 UserDTO currentUser = loghmeRepo.getUserDTO(userEmail);
-                if (claims.getExpiration().getTime() > System.currentTimeMillis()) {
+                if (claims.getExpiration().getTime() < System.currentTimeMillis()) {
                     res.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // -> 401, expired
                 }
                 else if (currentUser  != null) {
