@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class PartyFoodService {
     private Loghme loghme = Loghme.getInstance();
 
-    @RequestMapping(value = "/partyFood/{id}", method = RequestMethod.PUT,
+    @RequestMapping(value = "/partyFood/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ArrayList<FoodDTO> addFood(
             @RequestAttribute("claims") Claims claims,

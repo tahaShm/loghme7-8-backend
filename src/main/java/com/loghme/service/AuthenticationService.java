@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AuthenticationService {
-    @RequestMapping(value = "/authenticate", method = RequestMethod.PUT,
+    @RequestMapping(value = "/signup", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public String signUp(HttpEntity<String> httpEntity) {
         String token = null;
@@ -22,7 +22,7 @@ public class AuthenticationService {
         }
         return token;
     }
-    @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
+    @RequestMapping(value = "/login", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public String login(HttpEntity<String> httpEntity) {
         String token = null;

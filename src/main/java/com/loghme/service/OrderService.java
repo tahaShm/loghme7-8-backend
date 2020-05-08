@@ -19,7 +19,7 @@ public class OrderService {
         return loghme.getUserOrders(claims.getId());
     }
 
-    @RequestMapping(value = "/order", method = RequestMethod.PUT,
+    @RequestMapping(value = "/order", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void finalizeOrder(@RequestAttribute("claims") Claims claims) {
         try {
