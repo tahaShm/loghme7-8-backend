@@ -30,7 +30,8 @@ import java.util.Enumeration;
         "/currentOrder",
         "/credit/",
         "/credit",
-        "/profile"
+        "/profile",
+        "/checkAuth"
 })
 public class AuthenticationFilter implements Filter {
 

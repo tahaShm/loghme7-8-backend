@@ -35,6 +35,6 @@ public class AuthenticationService {
         return token;
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @RequestMapping(value = "/checkAuth", method = RequestMethod.GET)
     public void isLoggedIn() {}
 }
