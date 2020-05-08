@@ -4,6 +4,7 @@ import com.loghme.domain.utils.Loghme;
 import com.loghme.domain.utils.exceptions.BadRequestException;
 import com.loghme.domain.utils.exceptions.DuplicateEmail;
 import com.loghme.service.DTO.UserDTO;
+import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class ProfileService {
     @RequestMapping(value = "/profile", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDTO getUser() {
-        return Loghme.getInstance().getUserDTO("hoomch@gmail.com");
+    public UserDTO getUser(@RequestAttribute("claims") Claims claims) {
+        return Loghme.getInstance().getUserDTO(claims.getId());
     }
 }

@@ -2,8 +2,10 @@ package com.loghme.service;
 
 import com.loghme.domain.utils.Loghme;
 import com.loghme.domain.utils.exceptions.BadRequestException;
+import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,13 +16,13 @@ public class CreditService {
     @RequestMapping(value = "/credit", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public int addCredit(HttpEntity<String> httpEntity) {
+    public int addCredit(@RequestAttribute("claims") Claims claims, HttpEntity<String> httpEntity) {
         try {
-            loghme.addCredit("hoomch@gmail.com", httpEntity.getBody());
+            loghme.addCredit(claims.getId(), httpEntity.getBody());
         }
         catch (Exception e) {
             throw new BadRequestException();
         }
-        return loghme.getUserCredit("hoomch@gmail.com");
+        return loghme.getUserCredit(claims.getId());
     }
 }

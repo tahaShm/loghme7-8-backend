@@ -3,6 +3,7 @@ package com.loghme.service;
 import com.loghme.domain.utils.Loghme;
 import com.loghme.service.DTO.OrderDTO;
 import com.loghme.domain.utils.exceptions.BadRequestException;
+import io.jsonwebtoken.Claims;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,15 +15,15 @@ public class OrderService {
 
     @RequestMapping(value = "/order", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ArrayList<OrderDTO> getOrders() {
-        return loghme.getUserOrders("hoomch@gmail.com");
+    public ArrayList<OrderDTO> getOrders(@RequestAttribute("claims") Claims claims) {
+        return loghme.getUserOrders(claims.getId());
     }
 
     @RequestMapping(value = "/order", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public void finalizeOrder() {
+    public void finalizeOrder(@RequestAttribute("claims") Claims claims) {
         try {
-            loghme.finalizeOrder("hoomch@gmail.com");
+            loghme.finalizeOrder(claims.getId());
         }
         catch (Exception e) {
             throw new BadRequestException();

@@ -5,6 +5,7 @@ import com.loghme.service.DTO.FoodDTO;
 import com.loghme.domain.utils.Loghme;
 import com.loghme.service.DTO.PartyFoodDTO;
 import com.loghme.domain.utils.exceptions.BadRequestException;
+import io.jsonwebtoken.Claims;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,31 +18,33 @@ public class PartyFoodService {
     @RequestMapping(value = "/partyFood/{id}", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ArrayList<FoodDTO> addFood(
+            @RequestAttribute("claims") Claims claims,
             @PathVariable(value = "id") String id,
             @RequestParam(value = "foodName") String foodName,
             @RequestParam(value = "count") int count) {
         try {
-            loghme.changeCart("hoomch@gmail.com", id, foodName, count, true);
+            loghme.changeCart(claims.getId(), id, foodName, count, true);
         }
         catch (Exception e) {
             throw new BadRequestException();
         }
-        return loghme.getCurrentOrderFoods("hoomch@gmail.com");
+        return loghme.getCurrentOrderFoods(claims.getId());
     }
 
     @RequestMapping(value = "/partyFood/{id}", method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ArrayList<FoodDTO> deleteFood(
+            @RequestAttribute("claims") Claims claims,
             @PathVariable(value = "id") String id,
             @RequestParam(value = "foodName") String foodName,
             @RequestParam(value = "count") int count) {
         try {
-            loghme.changeCart("hoomch@gmail.com", id, foodName, -count, true);
+            loghme.changeCart(claims.getId(), id, foodName, -count, true);
         }
         catch (Exception e) {
             throw new BadRequestException();
         }
-        return loghme.getCurrentOrderFoods("hoomch@gmail.com");
+        return loghme.getCurrentOrderFoods(claims.getId());
     }
 
     @RequestMapping(value = "/partyFood", method = RequestMethod.GET,

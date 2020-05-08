@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Enumeration;
 
 @WebFilter(urlPatterns = {"/search/",
@@ -43,6 +44,7 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
 
         try {
+            System.out.println(req.getHeader("Authorization"));
             String authTokenHeader = req.getHeader("Authorization");
             if (authTokenHeader.length() > 7) { //Bearer
                 String[] parts = authTokenHeader.split(" ");
@@ -52,7 +54,10 @@ public class AuthenticationFilter implements Filter {
                 String userEmail = claims.getId();
                 LoghmeRepository loghmeRepo = LoghmeRepository.getInstance();
                 UserDTO currentUser = loghmeRepo.getUserDTO(userEmail);
-                if (currentUser  != null) {
+                if (claims.getExpiration().getTime() > System.currentTimeMillis()) {
+                    res.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // -> 401, expired
+                }
+                else if (currentUser  != null) {
 //                    System.out.println(claims);
                     req.setAttribute("claims", claims);
                     chain.doFilter(request, response);
