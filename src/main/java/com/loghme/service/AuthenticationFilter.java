@@ -26,7 +26,8 @@ import java.util.Enumeration;
         "/currentOrder/",
         "/currentOrder",
         "/credit/",
-        "/credit"
+        "/credit",
+        "/profile"
 })
 public class AuthenticationFilter implements Filter {
 
