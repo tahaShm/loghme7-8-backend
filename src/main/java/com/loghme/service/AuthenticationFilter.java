@@ -1,6 +1,8 @@
 package com.loghme.service;
 
 import com.loghme.domain.utils.Loghme;
+import com.loghme.repository.LoghmeRepository;
+import com.loghme.service.DTO.UserDTO;
 import io.jsonwebtoken.Claims;
 
 import javax.servlet.*;
@@ -42,22 +44,29 @@ public class AuthenticationFilter implements Filter {
 
         try {
             String authTokenHeader = req.getHeader("Authorization");
-            System.out.println(authTokenHeader);
             if (authTokenHeader.length() > 7) { //Bearer
                 String[] parts = authTokenHeader.split(" ");
                 String token = parts[1];
+//                token = Loghme.getInstance().createJWT("aaa", "bbb", 86400000);
                 Claims claims = Loghme.getInstance().decodeJWT(token);
-                req.setAttribute("claims", claims);
-                chain.doFilter(request, response);
+                String userEmail = claims.getId();
+                LoghmeRepository loghmeRepo = LoghmeRepository.getInstance();
+                UserDTO currentUser = loghmeRepo.getUserDTO(userEmail);
+                if (currentUser  != null) {
+//                    System.out.println(claims);
+                    req.setAttribute("claims", claims);
+                    chain.doFilter(request, response);
+                }
+                else {
+                    res.setStatus(HttpServletResponse.SC_FORBIDDEN); // -> 403
+                }
             }
             else {
-                //null token -> 401
-                System.out.println("empty token");
+                res.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // -> 401
             }
         }
         catch (Exception e) {
-            //invalid token -> 403
-            System.out.println("token is invalid!");
+            res.setStatus(HttpServletResponse.SC_FORBIDDEN); // -> 403
         }
     }
 }
