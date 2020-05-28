@@ -15,9 +15,9 @@ import java.util.Enumeration;
 
 @WebFilter(urlPatterns = {"/search/",
         "/search",
-        "/restaurant/",
-        "/restaurant",
-        "/restaurant/*",
+//        "/restaurant/",
+//        "/restaurant",
+//        "/restaurant/*",
         "/partyFood/",
         "/partyFood",
         "/partyFood/*",

@@ -13,6 +13,7 @@ public class RestaurantService {
     @RequestMapping(value = "/restaurant", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ArrayList<RestaurantDTO> getRestaurants(@RequestParam(value = "showLevel") int showLevel) {
+        System.out.println("restaurants here");
         return DTOHandler.getRestaurantsOnLevel(showLevel);
     }
 
