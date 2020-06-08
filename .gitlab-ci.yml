@@ -5,7 +5,7 @@ variables:
   CI_REGISTRY_USER: tahashm
   CI_REGISTRY_PASSWORD: Tahash1378
   CI_REGISTRY: docker.io
-  CI_REGISTRY_IMAGE: index.docker.io/tahashm/loghme:front
+  CI_REGISTRY_IMAGE: index.docker.io/tahashm/loghme:back
 
 docker-build:
   # Official docker image.
