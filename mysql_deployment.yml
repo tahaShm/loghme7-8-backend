@@ -19,10 +19,8 @@ metadata:
   labels:                         # Labels that will be applied to the resource
     app: loghme-app
 spec:
-  type: NodePort
   ports:
     - port: 3306
-      nodePort: 32032
   selector:                       # Selects any Pod with labels `app=loghme-app,tier=mysql`
     app: loghme-app
     tier: mysql
