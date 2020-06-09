@@ -20,16 +20,21 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
-              containerPort: 80 # The port that the container exposes
+              containerPort: 8080 # The port that the container exposes
           resources:
             limits:
               cpu: 0.2
               memory: "200Mi"
           env:                  # Environment variables supplied to the Pod
+            - name: SPRING_DATASOURCE_USERNAME # Name of the environment variable
+              valueFrom:          # Get the value of environment variable from kubernetes secrets
+                secretKeyRef:
+                  name: mysql-user-pass
+                  key: username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mysql-root-pass
+                  name: mysql-user-pass
                   key: password
             - name: SPRING_DATASOURCE_URL
               valueFrom:
@@ -51,5 +56,5 @@ spec:
     - name: http
       protocol: TCP
       nodePort: 32100
-      port: 80
-      targetPort: 80
+      port: 8080
+      targetPort: 8080
