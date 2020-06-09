@@ -48,6 +48,123 @@ public class LoghmeRepository {
         return instance;
     }
 
+    public void createTables() {
+        Connection connection;
+        Statement statement;
+        try {
+            connection = dataSource.getConnection();
+            statement =  connection.createStatement();
+
+            DatabaseMetaData dbm = connection.getMetaData();
+            ResultSet tables;
+            tables = dbm.getTables(null, null, "Users", null);
+            if (!tables.next()) {
+                statement.executeUpdate("create table Users (\n" +
+                        "    firstName char(100),\n" +
+                        "    lastName char(100),\n" +
+                        "    email char(100),\n" +
+                        "    credit integer,\n" +
+                        "    password char(100),\n" +
+                        "    primary key (email)\n" +
+                        ");");
+            }
+
+            tables = dbm.getTables(null, null, "Restaurants", null);
+            if (!tables.next()) {
+                statement.executeUpdate("create table Restaurants (\n" +
+                        "    id char(100),\n" +
+                        "    name char(100),\n" +
+                        "    logoUrl char(255),\n" +
+                        "    x float,\n" +
+                        "    y float,\n" +
+                        "    primary key (id)\n" +
+                        ");");
+            }
+
+            tables = dbm.getTables(null, null, "Foods", null);
+            if (!tables.next()) {
+                statement.executeUpdate("create table Foods (\n" +
+                        "    id integer NOT NULL AUTO_INCREMENT,\n" +
+                        "    name char(100),\n" +
+                        "    description text,\n" +
+                        "    popularity float,\n" +
+                        "    imageUrl char(255),\n" +
+                        "    price integer,\n" +
+                        "    count integer,\n" +
+                        "    primary key (id)\n" +
+                        ");");
+            }
+
+            tables = dbm.getTables(null, null, "PartyFoods", null);
+            if (!tables.next()) {
+                statement.executeUpdate("create table PartyFoods (\n" +
+                        "    id integer NOT NULL AUTO_INCREMENT,\n" +
+                        "    foodId integer,\n" +
+                        "    newPrice integer,\n" +
+                        "    count integer,\n" +
+                        "    valid char(1),\n" +
+                        "    primary key (id),\n" +
+                        "    foreign key (foodId) references Foods(id) on delete cascade\n" +
+                        ");");
+            }
+
+            tables = dbm.getTables(null, null, "Menu", null);
+            if (!tables.next()) {
+                statement.executeUpdate("create table Menu (\n" +
+                        "    restaurantId char(100),\n" +
+                        "    foodId integer,\n" +
+                        "    primary key (restaurantId, foodId),\n" +
+                        "    foreign key (restaurantId) references Restaurants(id) on delete cascade,\n" +
+                        "    foreign key (foodId) references Foods(id) on delete cascade\n" +
+                        ");");
+            }
+
+            tables = dbm.getTables(null, null, "PartyMenu", null);
+            if (!tables.next()) {
+                statement.executeUpdate("create table PartyMenu (\n" +
+                        "    restaurantId char(100),\n" +
+                        "    partyFoodId integer,\n" +
+                        "    primary key (restaurantId, partyFoodId),\n" +
+                        "    foreign key (restaurantId) references Restaurants(id) on delete cascade,\n" +
+                        "    foreign key (partyFoodId) references PartyFoods(id) on delete cascade\n" +
+                        ");");
+            }
+
+            tables = dbm.getTables(null, null, "Orders", null);
+            if (!tables.next()) {
+                statement.executeUpdate("create table Orders (\n" +
+                        "    id integer NOT NULL AUTO_INCREMENT,\n" +
+                        "    username char(50),\n" +
+                        "    restaurantId char(100),\n" +
+                        "    status ENUM ('searching', 'delivering', 'done', 'notFinalized'),\n" +
+                        "    registerTime DATETIME,\n" +
+                        "    primary key (id),\n" +
+                        "    foreign key (username) references Users(email) on delete cascade,\n" +
+                        "    foreign key (restaurantId) references Restaurants(id) on delete cascade\n" +
+                        ");");
+            }
+
+            tables = dbm.getTables(null, null, "OrderRows", null);
+            if (!tables.next()) {
+                statement.executeUpdate("create table OrderRows (\n" +
+                        "    id integer NOT NULL AUTO_INCREMENT,\n" +
+                        "    orderId integer,\n" +
+                        "    foodId integer NULL,\n" +
+                        "    partyFoodId integer NULL,\n" +
+                        "    count integer,\n" +
+                        "    foodType ENUM ('normal', 'party'),\n" +
+                        "    primary key (id),\n" +
+                        "    foreign key (orderId) references Orders(id) on delete cascade,\n" +
+                        "    foreign key (foodId) references Foods(id) on delete cascade,\n" +
+                        "    foreign key (partyFoodId) references PartyFoods(id) on delete cascade\n" +
+                        ");");
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public int authenticate(String email, String password) throws UserNotFoundExp {
         Connection connection;
         try {

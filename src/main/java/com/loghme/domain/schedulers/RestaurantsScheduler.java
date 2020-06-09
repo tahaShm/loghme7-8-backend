@@ -41,15 +41,15 @@ public class RestaurantsScheduler implements ServletContextListener {
                 }
 
                 convertedRestaurants = nameMapper.convertValue(restaurants, new TypeReference<ArrayList<Restaurant>>() { });
+                LoghmeRepository loghmeRepo = LoghmeRepository.getInstance();
+                loghmeRepo.createTables();
                 for (Restaurant restaurant: convertedRestaurants) {
-                    LoghmeRepository loghmeRepo = LoghmeRepository.getInstance();
                     loghmeRepo.addRestaurant(restaurant.getId(), restaurant.getName(), restaurant.getLogo(), restaurant.getLocation().getX(), restaurant.getLocation().getY());
                     for (Food food: restaurant.getMenu()) {
                         loghmeRepo.addFood(restaurant.getId(), food.getName(), food.getDescription(), food.getPopularity(), food.getImage(), food.getPrice(), food.getCount());
                     }
                 }
 
-                loghmeRepository.addUser("هومان", "چمنی", "hoomch@gmail.com", "pass");
                 return 0;
             }
         }, 0, TimeUnit.SECONDS);
