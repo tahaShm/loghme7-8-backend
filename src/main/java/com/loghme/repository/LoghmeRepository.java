@@ -24,12 +24,14 @@ public class LoghmeRepository {
 
     private LoghmeRepository() {
 
+
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 
+//        salam
         dataSource = new ComboPooledDataSource();
         dataSource.setJdbcUrl("jdbc:mysql://loghme-app-mysql:3306/loghme6?allowPublicKeyRetrieval=true&useSSL=false");
         dataSource.setUser("root");
