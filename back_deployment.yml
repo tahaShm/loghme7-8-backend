@@ -17,7 +17,7 @@ spec:
       containers:
         - name: loghme-app-server
           image: index.docker.io/tahashm/loghme:back
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8080 # The port that the container exposes

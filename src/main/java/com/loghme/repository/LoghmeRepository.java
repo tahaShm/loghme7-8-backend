@@ -909,7 +909,7 @@ public class LoghmeRepository {
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
         try (Connection connection = dataSource.getConnection()) {
-            preparedStatement = connection.prepareStatement("select * from Orders where username=?");
+            preparedStatement = connection.prepareStatement("select * from Orders where username=? and status != 'notFinalized'");
             preparedStatement.setString(1, email);
             result = preparedStatement.executeQuery();
             while (result.next()) {
