@@ -952,9 +952,10 @@ public class LoghmeRepository {
             preparedStatement.setString(1, email);
             result = preparedStatement.executeQuery();
             if (result.next()) {
+                String toReturn = result.getString("restaurantId");
                 result.close();
                 preparedStatement.close();
-                return result.getString("restaurantId");
+                return toReturn;
             }
             else {
                 result.close();
@@ -983,9 +984,10 @@ public class LoghmeRepository {
             preparedStatement.setInt(1, foodId);
             result = preparedStatement.executeQuery();
             if (result.next()) {
+                int toReturn = result.getInt("count");
                 result.close();
                 preparedStatement.close();
-                return result.getInt("count");
+                return toReturn;
             }
             else {
                 result.close();
@@ -1024,9 +1026,10 @@ public class LoghmeRepository {
                 result = preparedStatement.executeQuery();
             }
             if (result.next()) {
+                int toReturn = result.getInt("count");
                 result.close();
                 preparedStatement.close();
-                return result.getInt("count");
+                return toReturn;
             }
             else {
                 result.close();
@@ -1054,9 +1057,10 @@ public class LoghmeRepository {
             preparedStatement.setString(1, email);
             result = preparedStatement.executeQuery();
             if (result.next()) {
+                int toReturn = result.getInt("id");
                 result.close();
                 preparedStatement.close();
-                return result.getInt("id");
+                return toReturn;
             }
             else {
                 result.close();
