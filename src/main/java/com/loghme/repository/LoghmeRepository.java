@@ -31,7 +31,7 @@ public class LoghmeRepository {
         }
 
         dataSource = new ComboPooledDataSource();
-        dataSource.setJdbcUrl("jdbc:mysql://loghme-app-mysql:3306/loghme6?allowPublicKeyRetrieval=true&useSSL=false");
+        dataSource.setJdbcUrl("jdbc:mysql://185.166.105.6:32032/loghme6?allowPublicKeyRetrieval=true&useSSL=false");
         dataSource.setUser("root");
         dataSource.setPassword("Sph153153");
 
@@ -48,9 +48,11 @@ public class LoghmeRepository {
         return instance;
     }
 
-    public void createTables() {
+    public void createTables() throws SQLException {
         Statement statement;
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try  {
+            connection = dataSource.getConnection();
             statement = connection.createStatement();
 
             DatabaseMetaData dbm = connection.getMetaData();
@@ -157,13 +159,20 @@ public class LoghmeRepository {
                         "    foreign key (partyFoodId) references PartyFoods(id) on delete cascade\n" +
                         ");");
             }
+            statement.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
     }
 
-    public int authenticate(String email, String password) throws UserNotFoundExp {
-        try (Connection connection = dataSource.getConnection()) {
+    public int authenticate(String email, String password) throws UserNotFoundExp, SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement pStatement = connection.prepareStatement(
                     "select * from Users where email=?");
             pStatement.setString(1, email);
@@ -174,16 +183,24 @@ public class LoghmeRepository {
                 else
                     return -1;
             }
+            pStatement.close();
+            connection.close();
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         throw new UserNotFoundExp();
     }
 
-    public ArrayList<RestaurantDAO> getRestaurants() {
+    public ArrayList<RestaurantDAO> getRestaurants() throws SQLException {
         ArrayList<RestaurantDAO> restaurants = new ArrayList<RestaurantDAO>();
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery("select * from Restaurants");
             while (result.next()) {
@@ -201,12 +218,18 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return restaurants;
     }
 
-    public ArrayList<RestaurantDAO> getRestaurantsOnLevel(int numOfRestaurant) {
+    public ArrayList<RestaurantDAO> getRestaurantsOnLevel(int numOfRestaurant) throws SQLException {
         ArrayList<RestaurantDAO> restaurants = new ArrayList<RestaurantDAO>();
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery("select * from Restaurants limit " + numOfRestaurant + ";");
             while (result.next()) {
@@ -224,12 +247,18 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return restaurants;
     }
 
-    public ArrayList<RestaurantDAO> getSearchedRestaurants(String restaurantName, String foodName){
+    public ArrayList<RestaurantDAO> getSearchedRestaurants(String restaurantName, String foodName) throws SQLException {
         ArrayList<RestaurantDAO> restaurants = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
             PreparedStatement pStatement;
             if (restaurantName.equals("") && !foodName.equals("")) {
@@ -260,9 +289,14 @@ public class LoghmeRepository {
             }
             result.close();
             statement.close();
+            connection.close();
         }
         catch (SQLException e) {
             e.printStackTrace();
+        }
+        finally {
+            if (connection != null)
+                connection.close();
         }
         return restaurants;
     }
@@ -280,6 +314,7 @@ public class LoghmeRepository {
             pStatement.setFloat(5, y);
             pStatement.executeUpdate();
             pStatement.close();
+            connection.close();
         }
         catch (SQLException e) {
             if(e.getErrorCode() == MYSQL_DUPLICATE_PK ) {
@@ -295,6 +330,7 @@ public class LoghmeRepository {
                 pStatement.setString(5, id);
                 pStatement.executeUpdate();
                 pStatement.close();
+                connection.close();
             }
         }
         finally {
@@ -303,9 +339,11 @@ public class LoghmeRepository {
         }
     }
 
-    public int addFood(String restaurantId, String name, String description, float popularity, String imageUrl, int price, int count) {
+    public int addFood(String restaurantId, String name, String description, float popularity, String imageUrl, int price, int count) throws SQLException {
         int foodId = 0;
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preStatement = connection.prepareStatement("select F.id from Foods F, Menu M " +
                     "where M.restaurantId = ? and F.name = ? and M.foodId = F.id");
             preStatement.setString(1, restaurantId);
@@ -354,11 +392,17 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return foodId;
     }
 
-    public void invalidPrevPartyFoods() {
-        try (Connection connection = dataSource.getConnection()) {
+    public void invalidPrevPartyFoods() throws SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             String invalid = "0";
             String valid = "1";
             PreparedStatement pStatement = connection.prepareStatement(
@@ -371,12 +415,18 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
     }
 
-    public void addPartyFood(String restaurantId, int foodId, int newPrice, int count) {
+    public void addPartyFood(String restaurantId, int foodId, int newPrice, int count) throws SQLException {
         int partyFoodId = 0;
         String valid = "1";
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("select PF.id from PartyFoods PF, PartyMenu PM where " +
                     "PM.restaurantId = ? and PF.foodId = ? and PM.partyFoodId = PF.id");
             preparedStatement.setString(1, restaurantId);
@@ -421,11 +471,17 @@ public class LoghmeRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
     }
 
-    public RestaurantDAO getRestaurantById(String restaurantId) {
+    public RestaurantDAO getRestaurantById(String restaurantId) throws SQLException {
         RestaurantDAO restaurantDao = new RestaurantDAO();
-        try  (Connection connection = dataSource.getConnection()){
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("select * from Restaurants where id = ?");
             preparedStatement.setString(1, restaurantId);
             ResultSet result = preparedStatement.executeQuery();
@@ -442,12 +498,18 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return restaurantDao;
     }
 
-    public RestaurantDAO getRestaurantByPartyFoodId(int partyFoodId) {
+    public RestaurantDAO getRestaurantByPartyFoodId(int partyFoodId) throws SQLException {
         RestaurantDAO restaurantDao = new RestaurantDAO();
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("select R.* from Restaurants R, PartyMenu PM where PM.partyFoodId = ? and PM.restaurantId = R.id");
             preparedStatement.setInt(1, partyFoodId);
             ResultSet result = preparedStatement.executeQuery();
@@ -464,12 +526,18 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return restaurantDao;
     }
 
-    public ArrayList<FoodDAO> getRestaurantFoods(String restaurantId) {
+    public ArrayList<FoodDAO> getRestaurantFoods(String restaurantId) throws SQLException {
         ArrayList<FoodDAO> foods = new ArrayList<FoodDAO>();
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("select F.* from Foods F, Menu M where M.restaurantId = ? and M.foodId = F.id");
             preparedStatement.setString(1, restaurantId);
             ResultSet result = preparedStatement.executeQuery();
@@ -490,12 +558,18 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return foods;
     }
 
-    public ArrayList<PartyFoodDAO> getValidPartyFoods () {
+    public ArrayList<PartyFoodDAO> getValidPartyFoods () throws SQLException {
         ArrayList<PartyFoodDAO> partyFoods = new ArrayList<PartyFoodDAO>();
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery("select PF.id as pid, PF.newPrice, PF.count as pCount, PF.valid, F.* from PartyFoods PF,Foods F, PartyMenu PM where PF.valid = \"1\" and PF.foodId = F.id and PM.partyFoodId = PF.id");
             while (result.next()) {
@@ -517,12 +591,18 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return partyFoods;
     }
 
-    public int getCredit(String email) {
+    public int getCredit(String email) throws SQLException {
         int credit = 0;
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT credit FROM Users WHERE email=?");
             preparedStatement.setString(1, email);
             ResultSet result = preparedStatement.executeQuery();
@@ -536,11 +616,17 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return credit;
     }
 
-    public void changeCredit(String email, int addingCredit) throws NotEnoughCreditExp {
-        try (Connection connection = dataSource.getConnection()) {
+    public void changeCredit(String email, int addingCredit) throws NotEnoughCreditExp, SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement;
             int newCredit = getCredit(email) + addingCredit;
             if (newCredit < 0)
@@ -554,11 +640,17 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
     }
 
-    public int getFoodId(String foodName, String restaurantId) {
+    public int getFoodId(String foodName, String restaurantId) throws SQLException {
         int foodId = -1;
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT F.id FROM Menu M, Foods F WHERE M.restaurantId=? and F.name=? and F.id=M.foodId ");
             preparedStatement.setString(1, restaurantId);
             preparedStatement.setString(2, foodName);
@@ -571,12 +663,18 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return foodId;
     }
 
-    public int getPartyFoodId(String foodName, String restaurantId) {
+    public int getPartyFoodId(String foodName, String restaurantId) throws SQLException {
         int partyfoodId = -1;
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             int foodId = getFoodId(foodName, restaurantId);
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT F.id FROM PartyMenu M, PartyFoods F " +
                     "WHERE M.restaurantId=? and F.foodId=? and F.id=M.partyfoodId ");
@@ -591,12 +689,18 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return partyfoodId;
     }
 
-    public int addOrder(String username, String restaurantId, String status, HashMap<Food, Integer> foods, HashMap<PartyFood, Integer> partyFoods) {
+    public int addOrder(String username, String restaurantId, String status, HashMap<Food, Integer> foods, HashMap<PartyFood, Integer> partyFoods) throws SQLException {
         int orderId = 0;
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement pStatement = connection.prepareStatement(
                     "insert into Orders (username, restaurantId, status, registerTime) values (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             Date date = new Date();
@@ -651,11 +755,17 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return orderId;
     }
 
-    public void addUser(String firstName, String lastName, String email, String password) throws DuplicateEmail {
-        try (Connection connection = dataSource.getConnection()) {
+    public void addUser(String firstName, String lastName, String email, String password) throws DuplicateEmail, SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement pStatement = connection.prepareStatement(
                     "insert into Users (firstName, lastName, credit, email, password) values (?, ?, ?, ?, ?)");
             pStatement.setString(1, firstName);
@@ -672,10 +782,16 @@ public class LoghmeRepository {
             else
                 e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
     }
 
-    public UserDTO getUserDTO(String email) {
-        try (Connection connection = dataSource.getConnection()) {
+    public UserDTO getUserDTO(String email) throws SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM Users WHERE email=?");
             preparedStatement.setString(1, email);
             ResultSet result = preparedStatement.executeQuery();
@@ -693,13 +809,19 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return null;
     }
 
-    public FoodDTO getFoodDTOById(int foodId, int partyFoodId, String foodType) {
+    public FoodDTO getFoodDTOById(int foodId, int partyFoodId, String foodType) throws SQLException {
         FoodDTO foodDTO = new FoodDTO();
         if (foodType.equals("normal")) {
-            try (Connection connection = dataSource.getConnection()) {
+            Connection connection = null;
+            try {
+                connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM Foods WHERE  id=?");
                 preparedStatement.setInt(1, foodId);
                 ResultSet result = preparedStatement.executeQuery();
@@ -718,9 +840,15 @@ public class LoghmeRepository {
             catch (SQLException e) {
                 e.printStackTrace();
             }
+            finally {
+                if (connection != null)
+                    connection.close();
+            }
         }
         else {
-            try (Connection connection = dataSource.getConnection()) {
+            Connection connection = null;
+            try {
+                connection = dataSource.getConnection();
                 int newFoodId;
                 PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM PartyFoods WHERE id=?");
                 preparedStatement.setInt(1, partyFoodId);
@@ -751,14 +879,20 @@ public class LoghmeRepository {
             catch (SQLException e) {
                 e.printStackTrace();
             }
+            finally {
+                if (connection != null)
+                    connection.close();
+            }
         }
         return foodDTO;
     }
 
-    public ArrayList<FoodDTO> getFoodsByOrderId(int orderId) {
+    public ArrayList<FoodDTO> getFoodsByOrderId(int orderId) throws SQLException {
         ArrayList<FoodDTO> foodDTOS = new ArrayList<>();
 
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("select * from OrderRows where orderId=?");
             preparedStatement.setInt(1, orderId);
             ResultSet result = preparedStatement.executeQuery();
@@ -776,13 +910,18 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
-
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return foodDTOS;
     }
 
-    public ArrayList<OrderDTO> getOrders(String email) {
+    public ArrayList<OrderDTO> getOrders(String email) throws SQLException {
         ArrayList<OrderDTO> orders = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("select * from Orders where username=?");
             preparedStatement.setString(1, email);
             ResultSet result = preparedStatement.executeQuery();
@@ -799,11 +938,17 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return orders;
     }
 
-    public void updateOrderStatus(String status, int orderId) {
-        try (Connection connection = dataSource.getConnection()) {
+    public void updateOrderStatus(String status, int orderId) throws SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE Orders SET status=? WHERE id=?");
             preparedStatement.setString(1, status);
             preparedStatement.setInt(2, orderId);
@@ -813,10 +958,16 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
     }
 
-    public String getCurrentOrderRestaurantId(String email) {
-        try (Connection connection = dataSource.getConnection()) {
+    public String getCurrentOrderRestaurantId(String email) throws SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT restaurantId FROM Orders " +
                     "WHERE status=\"notFinalized\" and username=?");
             preparedStatement.setString(1, email);
@@ -835,11 +986,17 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return null;
     }
 
-    public int getPartyFoodCount(String restaurantId, String foodName) {
-        try (Connection connection = dataSource.getConnection()) {
+    public int getPartyFoodCount(String restaurantId, String foodName) throws SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             int foodId = getPartyFoodId(foodName, restaurantId);
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT count FROM PartyFoods WHERE id=?");
             preparedStatement.setInt(1, foodId);
@@ -858,11 +1015,17 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return -1;
     }
 
-    public int getOrderFoodCount(int orderId, int foodId, String foodType) {
-        try (Connection connection = dataSource.getConnection()) {
+    public int getOrderFoodCount(int orderId, int foodId, String foodType) throws SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement;
             ResultSet result;
             if (foodType.equals("normal")) {
@@ -893,11 +1056,17 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return -1;
     }
 
-    public int getCurrentOrderId(String email) {
-        try (Connection connection = dataSource.getConnection()) {
+    public int getCurrentOrderId(String email) throws SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT id FROM Orders WHERE username=? and status=\"notFinalized\"");
             preparedStatement.setString(1, email);
             ResultSet result = preparedStatement.executeQuery();
@@ -915,11 +1084,17 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
         return -1;
     }
 
-    public void changeCurrentOrder(String username, String foodName, String restaurantId, int count, String foodType) throws NotEnoughFoodToDelete, ExtraFoodPartyExp {
-        try (Connection connection = dataSource.getConnection()) {
+    public void changeCurrentOrder(String username, String foodName, String restaurantId, int count, String foodType) throws NotEnoughFoodToDelete, ExtraFoodPartyExp, SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement;
             int foodId;
             if (foodType.equals("normal"))
@@ -978,9 +1153,13 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
     }
 
-    public ArrayList<FoodDTO> getCurrentOrderFoods(String username) {
+    public ArrayList<FoodDTO> getCurrentOrderFoods(String username) throws SQLException {
         int orderId = getCurrentOrderId(username);
         return getFoodsByOrderId(orderId);
     }
@@ -993,9 +1172,11 @@ public class LoghmeRepository {
         return price;
     }
 
-    public void removeCurrentOrder(String username) {
+    public void removeCurrentOrder(String username) throws SQLException {
         int orderId = getCurrentOrderId(username);
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Orders WHERE id=?");
             preparedStatement.setInt(1, orderId);
             preparedStatement.executeUpdate();
@@ -1007,10 +1188,16 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
     }
 
-    public void reducePartyFoods(int orderId) {
-        try (Connection connection = dataSource.getConnection()) {
+    public void reducePartyFoods(int orderId) throws SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM OrderRows WHERE orderId=? and foodType=\"party\"");
             preparedStatement.setInt(1, orderId);
             ResultSet result = preparedStatement.executeQuery();
@@ -1026,9 +1213,13 @@ public class LoghmeRepository {
         catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (connection != null)
+                connection.close();
+        }
     }
 
-    public int finalizeOrder(String username) throws NotEnoughCreditExp {
+    public int finalizeOrder(String username) throws NotEnoughCreditExp, SQLException {
         int orderId = getCurrentOrderId(username);
         ArrayList<FoodDTO> foodDTOS = getFoodsByOrderId(orderId);
         int cartPrice = getCartPrice(foodDTOS);
@@ -1044,8 +1235,10 @@ public class LoghmeRepository {
         return orderId;
     }
 
-    public Location getOrderRestaurantLocation(int orderId) throws RestaurantNotFoundExp {
-        try (Connection connection = dataSource.getConnection()) {
+    public Location getOrderRestaurantLocation(int orderId) throws RestaurantNotFoundExp, SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT R.* FROM Restaurants R, Orders O WHERE O.id=? and O.restaurantId=R.id");
             preparedStatement.setInt(1, orderId);
             ResultSet result = preparedStatement.executeQuery();
@@ -1064,6 +1257,10 @@ public class LoghmeRepository {
         }
         catch (SQLException e) {
             e.printStackTrace();
+        }
+        finally {
+            if (connection != null)
+                connection.close();
         }
         throw new RestaurantNotFoundExp();
     }

@@ -9,6 +9,7 @@ import io.jsonwebtoken.Claims;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 @RestController
@@ -21,7 +22,7 @@ public class PartyFoodService {
             @RequestAttribute("claims") Claims claims,
             @PathVariable(value = "id") String id,
             @RequestParam(value = "foodName") String foodName,
-            @RequestParam(value = "count") int count) {
+            @RequestParam(value = "count") int count) throws SQLException {
         try {
             loghme.changeCart(claims.getId(), id, foodName, count, true);
         }
@@ -37,7 +38,7 @@ public class PartyFoodService {
             @RequestAttribute("claims") Claims claims,
             @PathVariable(value = "id") String id,
             @RequestParam(value = "foodName") String foodName,
-            @RequestParam(value = "count") int count) {
+            @RequestParam(value = "count") int count) throws SQLException {
         try {
             loghme.changeCart(claims.getId(), id, foodName, -count, true);
         }
