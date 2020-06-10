@@ -9,11 +9,13 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
+
 @RestController
 public class ProfileService {
     @RequestMapping(value = "/profile", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDTO getUser(@RequestAttribute("claims") Claims claims) {
+    public UserDTO getUser(@RequestAttribute("claims") Claims claims) throws SQLException {
         return Loghme.getInstance().getUserDTO(claims.getId());
     }
 }

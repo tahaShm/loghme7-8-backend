@@ -6,13 +6,14 @@ import com.loghme.service.DTO.RestaurantDTO;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 @RestController
 public class RestaurantService {
     @RequestMapping(value = "/restaurant", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ArrayList<RestaurantDTO> getRestaurants(@RequestParam(value = "showLevel") int showLevel) {
+    public ArrayList<RestaurantDTO> getRestaurants(@RequestParam(value = "showLevel") int showLevel) throws SQLException {
         System.out.println("restaurants here");
         return DTOHandler.getRestaurantsOnLevel(showLevel);
     }

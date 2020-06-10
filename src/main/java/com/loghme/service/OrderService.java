@@ -7,6 +7,7 @@ import io.jsonwebtoken.Claims;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 @RestController
@@ -15,7 +16,7 @@ public class OrderService {
 
     @RequestMapping(value = "/order", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ArrayList<OrderDTO> getOrders(@RequestAttribute("claims") Claims claims) {
+    public ArrayList<OrderDTO> getOrders(@RequestAttribute("claims") Claims claims) throws SQLException {
         return loghme.getUserOrders(claims.getId());
     }
 
