@@ -953,8 +953,6 @@ public class LoghmeRepository {
             result = preparedStatement.executeQuery();
             if (result.next()) {
                 String toReturn = result.getString("restaurantId");
-                result.close();
-                preparedStatement.close();
                 return toReturn;
             }
             else {
@@ -985,8 +983,6 @@ public class LoghmeRepository {
             result = preparedStatement.executeQuery();
             if (result.next()) {
                 int toReturn = result.getInt("count");
-                result.close();
-                preparedStatement.close();
                 return toReturn;
             }
             else {
@@ -1027,8 +1023,6 @@ public class LoghmeRepository {
             }
             if (result.next()) {
                 int toReturn = result.getInt("count");
-                result.close();
-                preparedStatement.close();
                 return toReturn;
             }
             else {
@@ -1058,8 +1052,6 @@ public class LoghmeRepository {
             result = preparedStatement.executeQuery();
             if (result.next()) {
                 int toReturn = result.getInt("id");
-                result.close();
-                preparedStatement.close();
                 return toReturn;
             }
             else {
