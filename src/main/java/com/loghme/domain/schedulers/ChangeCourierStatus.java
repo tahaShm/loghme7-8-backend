@@ -2,7 +2,6 @@ package com.loghme.domain.schedulers;
 
 import com.loghme.repository.LoghmeRepository;
 
-import java.sql.SQLException;
 import java.util.TimerTask;
 
 public class ChangeCourierStatus extends TimerTask {
@@ -11,11 +10,7 @@ public class ChangeCourierStatus extends TimerTask {
     public ChangeCourierStatus(int orderId) {this.orderId = orderId;}
 
     public void run() {
-        try {
-            LoghmeRepository.getInstance().updateOrderStatus("done", orderId);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        LoghmeRepository.getInstance().updateOrderStatus("done", orderId);
         cancel();
     }
 }

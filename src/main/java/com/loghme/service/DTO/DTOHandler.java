@@ -7,12 +7,11 @@ import com.loghme.repository.DAO.PartyFoodDAO;
 import com.loghme.repository.DAO.RestaurantDAO;
 import com.loghme.repository.LoghmeRepository;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class DTOHandler {
 
-    public static ArrayList<PartyFoodDTO> getPartyFoods() throws SQLException {
+    public static ArrayList<PartyFoodDTO> getPartyFoods() {
         ArrayList<PartyFoodDTO> retPartyFoods = new ArrayList<>();
         LoghmeRepository loghmeRepo = LoghmeRepository.getInstance();
         ArrayList<PartyFoodDAO> partyFoods = loghmeRepo.getValidPartyFoods();
@@ -23,7 +22,7 @@ public class DTOHandler {
         return retPartyFoods;
     }
 
-    public static ArrayList<FoodDTO> getRestaurantFoods(String id) throws SQLException {
+    public static ArrayList<FoodDTO> getRestaurantFoods(String id) {
         ArrayList<FoodDTO> toReturn = new ArrayList<>();
         LoghmeRepository loghmeRepo = LoghmeRepository.getInstance();
         ArrayList<FoodDAO> foods = loghmeRepo.getRestaurantFoods(id);
@@ -33,7 +32,7 @@ public class DTOHandler {
         return toReturn;
     }
 
-    public static ArrayList<RestaurantDTO> getRestaurantsOnLevel(int showLevel) throws SQLException {
+    public static ArrayList<RestaurantDTO> getRestaurantsOnLevel(int showLevel) {
         ArrayList<RestaurantDTO> toReturn = new ArrayList<>();
         LoghmeRepository loghmeRepo = LoghmeRepository.getInstance();
         ArrayList<RestaurantDAO> restaurants = loghmeRepo.getRestaurantsOnLevel(showLevel * 12);
@@ -43,7 +42,7 @@ public class DTOHandler {
         return toReturn;
     }
 
-    public static RestaurantDTO getRestaurantById(String id) throws RestaurantNotFoundExp, SQLException {
+    public static RestaurantDTO getRestaurantById(String id) throws RestaurantNotFoundExp {
         LoghmeRepository loghmeRepo = LoghmeRepository.getInstance();
         RestaurantDAO restaurant = loghmeRepo.getRestaurantById(id);
         if (restaurant == null)
@@ -51,7 +50,7 @@ public class DTOHandler {
         return new RestaurantDTO(restaurant.getId(), restaurant.getName(), restaurant.getX(), restaurant.getY(), restaurant.getLogoUrl(), loghmeRepo.getRestaurantFoods(restaurant.getId()));
     }
 
-    public static ArrayList<RestaurantDTO> getSearchedRestaurants(String restaurantName, String foodName) throws SQLException {
+    public static ArrayList<RestaurantDTO> getSearchedRestaurants(String restaurantName, String foodName){
         ArrayList<RestaurantDTO> toReturn = new ArrayList<>();
         LoghmeRepository loghmeRepo = LoghmeRepository.getInstance();
         ArrayList<RestaurantDAO> restaurants = loghmeRepo.getSearchedRestaurants(restaurantName, foodName);

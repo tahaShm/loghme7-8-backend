@@ -40,7 +40,7 @@ public class Loghme
 
     public long getPartyStartTime() { return partyStartTime; }
 
-    public void changeCart(String username, String restaurantId, String foodName, int count, boolean isPartyFood) throws FoodFromOtherRestaurantInCartExp, ExtraFoodPartyExp, NotEnoughFoodToDelete, SQLException {
+    public void changeCart(String username, String restaurantId, String foodName, int count, boolean isPartyFood) throws FoodFromOtherRestaurantInCartExp, ExtraFoodPartyExp, NotEnoughFoodToDelete {
         String currentOrderRestaurantId = loghmeRepository.getCurrentOrderRestaurantId(username);
         if (currentOrderRestaurantId == null || currentOrderRestaurantId.equals(restaurantId)) {
             if (isPartyFood)
@@ -52,7 +52,7 @@ public class Loghme
             throw new FoodFromOtherRestaurantInCartExp();
     }
 
-    public void finalizeOrder(String username) throws NotEnoughCreditExp, RestaurantNotFoundExp, SQLException {
+    public void finalizeOrder(String username) throws NotEnoughCreditExp, RestaurantNotFoundExp {
         int orderId = loghmeRepository.finalizeOrder(username);
         Location location = loghmeRepository.getOrderRestaurantLocation(orderId);
         Timer timer = new Timer();
@@ -60,24 +60,24 @@ public class Loghme
         timer.schedule(task, 0, 3000);
     }
 
-    public void addCredit(String username, String json) throws JSONException, NotEnoughCreditExp, SQLException {
+    public void addCredit(String username, String json) throws JSONException, NotEnoughCreditExp {
         JSONObject obj = new JSONObject(json);
         loghmeRepository.changeCredit(username, obj.getInt("credit"));
     }
 
-    public int getUserCredit(String username) throws SQLException {
+    public int getUserCredit(String username) {
         return loghmeRepository.getCredit(username);
     }
 
-    public UserDTO getUserDTO(String username) throws SQLException {
+    public UserDTO getUserDTO(String username) {
         return loghmeRepository.getUserDTO(username);
     }
 
-    public ArrayList<OrderDTO> getUserOrders(String username) throws SQLException {
+    public ArrayList<OrderDTO> getUserOrders(String username) {
         return loghmeRepository.getOrders(username);
     }
 
-    public ArrayList<FoodDTO> getCurrentOrderFoods(String username) throws SQLException {
+    public ArrayList<FoodDTO> getCurrentOrderFoods(String username) {
         return loghmeRepository.getCurrentOrderFoods(username);
     }
 
@@ -139,13 +139,13 @@ public class Loghme
         return claims;
     }
 
-    public String addUser(String json) throws JSONException, DuplicateEmail, SQLException {
+    public String addUser(String json) throws JSONException, DuplicateEmail {
         JSONObject obj = new JSONObject(json);
         loghmeRepository.addUser(obj.getString("firstName"), obj.getString("lastName"), obj.getString("email"), hashPassword(obj.getString("password")));
         return createJWT(obj.getString("email"), obj.getString("issuer"), 86400000);
     }
 
-    public String loginUser(String json) throws JSONException, UserNotFoundExp, WrongPasswordExp, SQLException {
+    public String loginUser(String json) throws JSONException, UserNotFoundExp, WrongPasswordExp {
         JSONObject obj = new JSONObject(json);
         if (obj.getBoolean("authWithGoogle"))
             return createJWT(obj.getString("email"), obj.getString("issuer"), 86400000);
