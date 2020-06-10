@@ -19,10 +19,8 @@ metadata:
   labels:                         # Labels that will be applied to the resource
     app: loghme-app
 spec:
-  type: NodePort
   ports:
     - port: 3306
-      nodePort: 32032
   selector:                       # Selects any Pod with labels `app=loghme-app,tier=mysql`
     app: loghme-app
     tier: mysql
@@ -48,7 +46,7 @@ spec:
         tier: mysql
     spec:                           # The spec for the containers that will be run inside the Pods in this deployment
       containers:
-        - image: mysql:8.0.20           # The container image
+        - image: mysql:8           # The container image
           name: mysql
           resources:
             limits:

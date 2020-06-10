@@ -31,7 +31,7 @@ public class LoghmeRepository {
         }
 
         dataSource = new ComboPooledDataSource();
-        dataSource.setJdbcUrl("jdbc:mysql://185.166.105.6:32032/loghme6?allowPublicKeyRetrieval=true&useSSL=false");
+        dataSource.setJdbcUrl("jdbc:mysql://loghme-app-mysql:3306/loghme6?allowPublicKeyRetrieval=true&useSSL=false");
         dataSource.setUser("root");
         dataSource.setPassword("Sph153153");
 
