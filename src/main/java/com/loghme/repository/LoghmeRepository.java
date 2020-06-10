@@ -39,7 +39,7 @@ public class LoghmeRepository {
         dataSource.setMinPoolSize(5);
         dataSource.setAcquireIncrement(5);
         dataSource.setMaxPoolSize(100);
-        dataSource.setMaxStatements(200);
+        dataSource.setMaxStatements(150);
     }
 
     public static LoghmeRepository getInstance() {
